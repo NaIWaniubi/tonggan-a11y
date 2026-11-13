@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="通感 TongGan">
+  <!--
+    应用图标：一个被逐格导航的表格，右侧三格用深浅表达「同一个内容还有另一种通道」。
+    刻意不引用任何外部资源（没有 <image href>、没有字体、没有外链）：PWA 要求图标
+    在断网时也能画出来 —— 外部 URL 会让「可安装」在半离线时直接破功。
+    xmlns 是 SVG 命名空间标识，不是网络请求。
+  -->
+  <title>通感 TongGan</title>
+  <rect width="512" height="512" rx="104" fill="#0b1020" />
+  <rect x="72" y="96" width="368" height="320" rx="36" fill="none" stroke="#7dd3fc" stroke-width="20" />
+
+  <!-- 表头行 -->
+  <rect x="100" y="124" width="312" height="56" rx="14" fill="#1e3a5f" />
+
+  <!-- 三行数据：左列是「源」，右列是「听」的深浅刻度 -->
+  <rect x="100" y="196" width="140" height="52" rx="12" fill="#7dd3fc" />
+  <rect x="272" y="196" width="140" height="52" rx="12" fill="#38bdf8" opacity="0.85" />
+
+  <rect x="100" y="264" width="140" height="52" rx="12" fill="#7dd3fc" />
+  <rect x="272" y="264" width="140" height="52" rx="12" fill="#38bdf8" opacity="0.55" />
+
+  <rect x="100" y="332" width="140" height="52" rx="12" fill="#7dd3fc" />
+  <rect x="272" y="332" width="140" height="52" rx="12" fill="#38bdf8" opacity="0.3" />
+
+  <!-- 声波：把「值」翻成另一种通道的三道弧 -->
+  <g fill="none" stroke="#fbbf24" stroke-width="16" stroke-linecap="round">
+    <path d="M356 236 a44 44 0 0 1 0 40" />
+    <path d="M392 214 a84 84 0 0 1 0 84" />
+  </g>
+</svg>

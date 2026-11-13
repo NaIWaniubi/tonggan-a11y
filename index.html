@@ -1,0 +1,35 @@
+<!doctype html>
+<!-- translate="no"：界面文案是产品语言的一部分，机翻会毁掉「表头」「值」这些术语，
+     而且浏览器翻译条会挡住界面（录屏时尤其明显）。这是刻意的决定，不是疏忽。 -->
+<html lang="zh-CN" translate="no">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>通感 TongGan — 非文本信息的无障碍引擎</title>
+    <meta
+      name="description"
+      content="一张表格截图进去，一个能被读屏逐格导航、能听、能导出盲文的结构化表格出来。"
+    />
+    <!-- PWA：可安装 + 离线。manifest 与图标都在 public/ 下（构建时被原样复制到 dist 根），
+         相对路径 "./" 在子路径托管下也对。manifest 里不引用任何外部 URL：装到桌面后
+         断网也要能画出图标。离线能力的诚实边界（dev 下 SW 不生效、首次访问必须联网一次、
+         能否安装取决于浏览器支持）写在 public/manifest.webmanifest 的 _boundary 与
+         src/app/offline.ts 顶部。 -->
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+    <meta name="theme-color" content="#0b1020" />
+    <script type="module" crossorigin src="./assets/index-C-oqIFwq.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-DS9nClXr.css">
+  </head>
+  <body>
+    <!-- 跳过链接由应用自己注入（带焦点管理与 data-testid）；
+         这里不再放一份静态的，否则页面上会出现两个一样的「跳到主内容」。 -->
+    <!-- 挂载点保持「裸 div」：不给它 aria-label。产品名已由页眉里的 <h1>通感 TongGan</h1>
+         承担（在 banner landmark 内），而给一个普通 div 起名字会让 axe 的 region 规则
+         判定「有一块被命名的内容不在任何 landmark 里」——实测这是全站唯一一条该规则违规。
+         页面名由 <title> 提供，二者都不缺。 -->
+    <div id="app">
+      <noscript>本工具需要 JavaScript 才能运行。</noscript>
+    </div>
+  </body>
+</html>

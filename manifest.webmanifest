@@ -1,0 +1,35 @@
+{
+  "name": "通感 TongGan — 非文本信息的无障碍引擎",
+  "short_name": "通感",
+  "description": "一张表格截图进去，一个能被读屏逐格导航、能听、能导出盲文的结构化表格出来。首次访问联网一次后，断网刷新可继续使用。",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "orientation": "any",
+  "lang": "zh-CN",
+  "dir": "ltr",
+  "theme_color": "#0b1020",
+  "background_color": "#0b1020",
+  "categories": ["accessibility", "productivity", "utilities"],
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "_offline_scope": "首次访问（联网）时，Service Worker 会把壳、首屏构建产物与全部构建产物 chunk 装进缓存 —— 包括「加载示例」这类按需懒 chunk。因此被 SW 接管后（刷新一次），断网刷新可以正常打开界面并加载示例。",
+  "_offline_excluded": [
+    "OCR 离线不可用，这是有意的边界：tesseract.js 的 worker/wasm 默认来自公网 CDN，语言包 tessdata/*.traineddata.gz（chi_sim 约 19MB）也刻意不预缓存 —— 预缓存它等于让第一次访问变成下载 20MB。它只会在用户真用 OCR 时按需联网获取。"
+  ],
+  "_boundary": [
+    "dev（vite dev）下 Service Worker 不注册：dev 没有构建产物，缓存 dev 模块会喂过期代码。离线能力只在构建产物（dist）上验证。",
+    "首次访问必须联网一次，预缓存才有东西可回退；并且要等本页被 SW 接管（首次访问 controller 常为 null，刷新一次即被接管）才离线可用。这不是「天生离线」。",
+    "「安装到桌面」取决于浏览器是否支持（需要 navigator.serviceWorker 与安全上下文），不是本应用能保证的。"
+  ],
+  "_icons_note": "图标是本仓库自绘的 public/icon.svg，不引用任何外部 URL：装到桌面后断网也要能画出来。"
+}
