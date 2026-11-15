@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>通感迷你条</title>
+<style>
+  /* 迷你条的设计目标：占最小的屏幕空间，但每个控件都是真按钮——
+     可聚焦、有可访问名、44px 触摸高度（整条 56px 里尽量大）、高对比。 */
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; height: 56px; overflow: hidden;
+    display: flex; align-items: center; gap: 6px;
+    padding: 0 8px;
+    background: #10151b; color: #f2f5f8;
+    font: 13px/1.4 system-ui, "Microsoft YaHei", sans-serif;
+    border: 1px solid #3a4553; border-radius: 10px;
+    -webkit-user-select: none; user-select: none;
+  }
+  #caption {
+    flex: 1 1 auto; min-width: 60px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    font-size: 13px;
+  }
+  button {
+    flex: 0 0 auto; height: 40px; padding: 0 10px;
+    font: 600 13px/1 system-ui, "Microsoft YaHei", sans-serif;
+    color: #f2f5f8; background: #24303e;
+    border: 1px solid #4a5a6d; border-radius: 8px; cursor: pointer;
+  }
+  button:hover { background: #31404f; }
+  button:focus-visible { outline: 3px solid #ffb020; outline-offset: 2px; }
+  button[data-danger] { background: #4a2026; border-color: #7a3b44; }
+  #drag { position: fixed; inset: 0 0 auto 0; height: 14px; } /* 无边框窗口的拖动区 */
+</style>
+</head>
+<body>
+  <div id="drag" aria-hidden="true" data-tauri-drag-region></div>
+  <span id="caption" role="status" aria-live="polite">就绪：Alt+Shift+S 截屏读屏</span>
+  <button id="capture" type="button">截屏读</button>
+  <button id="stop" type="button">停读</button>
+  <button id="restore" type="button">恢复</button>
+  <button id="quit" type="button" data-danger>退出</button>
+<script>
+  // 与桌面壳的四条命令一一对应；这里**不实现任何识别/播报**，
+  // 播报文字由主窗口经 Rust 转发（__tgSay），保证迷你条与主界面永远同一条口径。
+  const invoke = (cmd) => {
+    const internals = window.__TAURI_INTERNALS__;
+    if (!internals) return;
+    internals.invoke(cmd).catch(() => {});
+  };
+  document.getElementById("capture").addEventListener("click", () => invoke("request_capture"));
+  document.getElementById("stop").addEventListener("click", () => invoke("stop_speech"));
+  document.getElementById("restore").addEventListener("click", () => invoke("show_main"));
+  document.getElementById("quit").addEventListener("click", () => invoke("quit_app"));
+  window.__tgSay = (text) => {
+    const el = document.getElementById("caption");
+    el.textContent = String(text || "").slice(0, 120);
+    el.title = el.textContent;
+  };
+</script>
+</body>
+</html>
