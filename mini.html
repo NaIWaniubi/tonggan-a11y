@@ -45,20 +45,37 @@
 <script>
   // 与桌面壳的四条命令一一对应；这里**不实现任何识别/播报**，
   // 播报文字由主窗口经 Rust 转发（__tgSay），保证迷你条与主界面永远同一条口径。
+  const say = (t) => {
+    const el = document.getElementById("caption");
+    el.textContent = String(t || "").slice(0, 120);
+    el.title = el.textContent;
+  };
   const invoke = (cmd) => {
     const internals = window.__TAURI_INTERNALS__;
-    if (!internals) return;
-    internals.invoke(cmd).catch(() => {});
+    if (!internals) {
+      // 迷你条常常是唯一的控制入口：命令送不出去必须在这里说出来，
+      // 不能让用户对着四个按了没反应的按钮猜。
+      say("桌面壳通道未就绪：请按 Alt+Shift+T 回到主窗口");
+      return;
+    }
+    internals.invoke(cmd).catch((error) => say("操作失败：" + String(error).slice(0, 60)));
   };
   document.getElementById("capture").addEventListener("click", () => invoke("request_capture"));
   document.getElementById("stop").addEventListener("click", () => invoke("stop_speech"));
   document.getElementById("restore").addEventListener("click", () => invoke("show_main"));
   document.getElementById("quit").addEventListener("click", () => invoke("quit_app"));
-  window.__tgSay = (text) => {
-    const el = document.getElementById("caption");
-    el.textContent = String(text || "").slice(0, 120);
-    el.title = el.textContent;
-  };
+  window.__tgSay = say;
+  if (!window.__TAURI_INTERNALS__) {
+    // 有人从站点直接点开这个页面时，别让他对着一排没反应的按钮摸索。
+    say("此页是桌面版的迷你条，请在桌面程序里使用；网页版直接访问首页即可");
+  }
+  // 页面就绪握手：不等 Rust 侧 eval（预建窗口在 build 时 eval 会被 && 静默吞掉）。
+  const internals = window.__TAURI_INTERNALS__;
+  if (internals) {
+    internals.invoke("get_caption").then((text) => {
+      if (text) say(text);
+    }).catch(() => {});
+  }
 </script>
 </body>
 </html>

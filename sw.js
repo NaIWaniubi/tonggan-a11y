@@ -54,7 +54,7 @@
 
 // 版本常量：改这里 = 换一代缓存。必须与 src/app/offline.ts 的 SW_VERSION 一致
 // （测试里有静态断言；offline.ts 还把它拼进注册 URL 的 `?v=`，用于读出已激活 SW 的版本）。
-const SW_VERSION = "v2";
+const SW_VERSION = "v3";
 
 // 缓存名前缀。必须与 src/app/offline.ts 的 CACHE_PREFIX 逐字一致。
 const CACHE_PREFIX = "tonggan-offline";
@@ -286,6 +286,17 @@ self.addEventListener("activate", (event) => {
 });
 
 /** 只处理同源 GET；其余（非 GET / 跨域 / chrome-extension）直接放行。 */
+/** desktop/ 子目录（相对本 SW 的根 scope）：安装包，不缓存。 */
+function isDesktopAsset(rawUrl) {
+  try {
+    const base = new URL("./", self.location.href).pathname;
+    const rel = new URL(rawUrl).pathname.slice(base.length);
+    return rel.startsWith("desktop/");
+  } catch {
+    return false;
+  }
+}
+
 function isSameOriginGet(request) {
   if (request.method !== "GET") return false;
   return sameOrigin(request.url);
@@ -376,6 +387,12 @@ async function cacheFirst(request) {
 self.addEventListener("fetch", (event) => {
   const { request } = event;
   if (!isSameOriginGet(request)) return; // 非 GET / 跨域 / chrome-extension：放行
+
+  // 桌面版安装包（26MB）直接放行：它是「下载走」而不是「页面要用」的资源，
+  // 塞进 CacheStorage 只会白占配额，而且下载语义上每次都应该拿最新的。
+  // 判断必须**相对 SW 自己的挂载根**：Pages 子路径部署时 pathname 是
+  // `/tonggan-a11y/desktop/…`，绝对前缀 `/desktop/` 永远不命中（独立评审 S1）。
+  if (isDesktopAsset(request.url)) return;
 
   if (isNetworkFirst(request)) {
     event.respondWith(networkFirst(request));
